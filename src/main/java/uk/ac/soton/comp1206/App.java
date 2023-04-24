@@ -44,6 +44,7 @@ public class App extends Application {
     public void start(Stage stage) {
         instance = this;
         this.stage = stage;
+        stage.setResizable(false);
 
         //Open game window
         openGame();

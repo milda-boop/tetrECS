@@ -103,4 +103,51 @@ public class Grid {
         return rows;
     }
 
+
+    /**
+     * Determines whether a piece can be played at a certain place on the grid
+     * @param piece the piece to be played
+     * @param x the x coordinate of the position to be played
+     * @param y the y coordinate of the position to be played
+     * @return the boolean value
+     */
+    public boolean canPlayPiece(GamePiece piece, int x, int y)
+    {
+        int[][] blocks = piece.getBlocks();
+        for(int i=0;i<3;i++)
+        {
+            for(int j=0;j<3;j++)
+            {
+                if(blocks[i][j] > 0 && get(x+i-1,y+j-1) != 0)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Plays the piece on the grid by updating the grids corresponding coordinates with
+     * the pieces value
+     * @param piece the piece to be played
+     * @param x the x coordinate of where the centre of the piece will be played
+     * @param y the y coordinate of where the centre of the piece will be played
+     */
+    public void playPiece(GamePiece piece, int x, int y)
+    {
+        int[][] blocks = piece.getBlocks();
+        for(int i=0;i<3;i++)
+        {
+            for(int j=0;j<3;j++)
+            {
+                if(blocks[i][j] > 0)
+                {
+                    set(x+i-1,y+j-1, piece.getValue());
+                }
+            }
+        }
+    }
+
+
 }

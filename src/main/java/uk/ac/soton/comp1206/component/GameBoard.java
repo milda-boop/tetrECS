@@ -1,10 +1,15 @@
 package uk.ac.soton.comp1206.component;
 
+import java.util.HashSet;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.event.BlockClickedListener;
+import uk.ac.soton.comp1206.event.RightClickedListener;
 import uk.ac.soton.comp1206.game.Grid;
 
 /**
@@ -55,6 +60,11 @@ public class GameBoard extends GridPane {
      * The listener to call when a specific block is clicked
      */
     private BlockClickedListener blockClickedListener;
+
+    /**
+     * The listener to call when the mouse has right-clicked on the game board
+     */
+    private RightClickedListener rightClickedListener;
 
 
     /**
@@ -122,6 +132,13 @@ public class GameBoard extends GridPane {
                 createBlock(x,y);
             }
         }
+        setOnMouseClicked((e) -> {
+            if(e.getButton() == MouseButton.SECONDARY)
+            {
+                rightClicked(e);
+            }
+        });
+
     }
 
     /**
@@ -146,7 +163,12 @@ public class GameBoard extends GridPane {
         block.bind(grid.getGridProperty(x,y));
 
         //Add a mouse click handler to the block to trigger GameBoard blockClicked method
-        block.setOnMouseClicked((e) -> blockClicked(e, block));
+        block.setOnMouseClicked((e) -> {
+            if(e.getButton() == MouseButton.PRIMARY)
+            {
+                blockClicked(e, block);
+            }});
+
 
         return block;
     }
@@ -164,12 +186,44 @@ public class GameBoard extends GridPane {
      * @param event mouse event
      * @param block block clicked on
      */
-    private void blockClicked(MouseEvent event, GameBlock block) {
+    public void blockClicked(MouseEvent event, GameBlock block) {
         logger.info("Block clicked: {}", block);
 
         if(blockClickedListener != null) {
             blockClickedListener.blockClicked(block);
         }
     }
+
+
+    /**
+     * Set the listener to handle an event when the mouse has right-clicked.
+     * @param listener listener to add
+     */
+    public void setOnRightClicked(RightClickedListener listener)
+    {
+        this.rightClickedListener = listener;
+    }
+
+    /**
+     * Triggered when the mouse has right-clicked. Call the attached listener.
+     * @param event mouse event
+     */
+    private void rightClicked(MouseEvent event)
+    {
+        if(rightClickedListener != null)
+        {
+            rightClickedListener.rightClicked();
+        }
+    }
+    public void fadeOut(HashSet<Pair<Integer,Integer>> blocks)
+    {
+        for(Pair<Integer,Integer> block : blocks)
+        {
+            getBlock(block.getKey(),block.getValue()).fadeOut();
+        }
+
+    }
+
+
 
 }

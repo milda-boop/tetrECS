@@ -1,5 +1,6 @@
 package uk.ac.soton.comp1206.component;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -87,6 +88,16 @@ public class GameBlock extends Canvas {
 
         //When the value property is updated, call the internal updateValue method
         value.addListener(this::updateValue);
+
+        if(!(gameBoard instanceof PieceBoard))
+        {
+            setOnMouseEntered((e) -> {
+                paintColor(Color.rgb(255,255,255,0.5));});
+            setOnMouseExited((e) -> {
+                paint();
+            });
+        }
+
     }
 
     /**
@@ -110,6 +121,7 @@ public class GameBlock extends Canvas {
             //If the block is not empty, paint with the colour represented by the value
             paintColor(COLOURS[value.get()]);
         }
+
     }
 
     /**
@@ -122,11 +134,11 @@ public class GameBlock extends Canvas {
         gc.clearRect(0,0,width,height);
 
         //Fill
-        gc.setFill(Color.WHITE);
+        gc.setFill(Color.rgb(0,0,0,0.5));
         gc.fillRect(0,0, width, height);
 
         //Border
-        gc.setStroke(Color.BLACK);
+        gc.setStroke(Color.WHITE);
         gc.strokeRect(0,0,width,height);
     }
 
@@ -134,7 +146,7 @@ public class GameBlock extends Canvas {
      * Paint this canvas with the given colour
      * @param colour the colour to paint
      */
-    private void paintColor(Paint colour) {
+    private void paintColor(Color colour) {
         var gc = getGraphicsContext2D();
 
         //Clear
@@ -145,8 +157,21 @@ public class GameBlock extends Canvas {
         gc.fillRect(0,0, width, height);
 
         //Border
-        gc.setStroke(Color.BLACK);
+        gc.setStroke(Color.WHITE);
         gc.strokeRect(0,0,width,height);
+
+        if(value.get()>0)
+        {
+            gc.setFill(colour.desaturate());
+            gc.fillRect(width/5,height/5,width-((2*width)/5),height-((2*height)/5));
+
+            gc.setFill(colour.darker());
+            gc.fillPolygon(new double[]{0,width/5,width/5,0},new double[]{0,height/5,height-(height/5),height},4);
+            gc.fillPolygon(new double[]{0,width/5,width-(width/5),width},new double[]{height,height-(height/5),
+            height-(height/5),height},4);
+        }
+
+
     }
 
     /**
@@ -180,5 +205,26 @@ public class GameBlock extends Canvas {
     public void bind(ObservableValue<? extends Number> input) {
         value.bind(input);
     }
+
+    /**
+     * Fades out the block. Used when clearing lines in the game board.
+     */
+    public void fadeOut() {
+        final double[] val = {1.0};
+        paintEmpty();
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                paintColor(new Color(0,0.8,0.2, val[0]));
+                val[0] = val[0] - 0.02;
+                if(val[0]<=0)
+                {
+                    paintColor(Color.rgb(0,0,0,0.5));
+                    stop();
+                }
+            }
+        }.start();
+    }
+
 
 }

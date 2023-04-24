@@ -2,6 +2,8 @@ package uk.ac.soton.comp1206.ui;
 
 import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -9,6 +11,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.App;
+import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.network.Communicator;
 import uk.ac.soton.comp1206.scene.*;
 
@@ -84,6 +87,13 @@ public class GameWindow {
      * Display the single player challenge
      */
     public void startChallenge() { loadScene(new ChallengeScene(this)); }
+    public void getInstructions(){loadScene(new InstructionsScene(this));}
+    public void startLobby(){loadScene(new LobbyScene(this));}
+    public void getScores(Game game){
+        ScoresScene scene = new ScoresScene(this);
+        scene.setGame(game);
+        loadScene(scene);
+    }
 
     /**
      * Setup the default settings for the stage itself (the window), such as the title and minimum width and height.
@@ -100,6 +110,7 @@ public class GameWindow {
      * @param newScene new scene to load
      */
     public void loadScene(BaseScene newScene) {
+        logger.info("loading scene");
         //Cleanup remains of the previous scene
         cleanup();
 
@@ -107,10 +118,13 @@ public class GameWindow {
         newScene.build();
         currentScene = newScene;
         scene = newScene.setScene();
+        scene.addEventHandler(KeyEvent.KEY_PRESSED, keyEvent -> {
+            currentScene.handleEvents(keyEvent);});
         stage.setScene(scene);
 
         //Initialise the scene when ready
         Platform.runLater(() -> currentScene.initialise());
+        logger.info("Scene initialised");
     }
 
     /**

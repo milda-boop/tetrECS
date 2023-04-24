@@ -1,7 +1,10 @@
 package uk.ac.soton.comp1206.scene;
 
+import javafx.event.Event;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import uk.ac.soton.comp1206.game.Game;
 import uk.ac.soton.comp1206.ui.GamePane;
 import uk.ac.soton.comp1206.ui.GameWindow;
 
@@ -14,6 +17,7 @@ public abstract class BaseScene {
 
     protected GamePane root;
     protected Scene scene;
+
 
     /**
      * Create a new scene, passing in the GameWindow the scene will be displayed in
@@ -52,5 +56,7 @@ public abstract class BaseScene {
     public Scene getScene() {
         return this.scene;
     }
+    public abstract void handleEvents(KeyEvent e);
+
 
 }
